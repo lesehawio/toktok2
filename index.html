@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>توک توک پلاس</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Trebuchet MS", sans-serif;
+            background: #ffffff;
+            color: #fff;
+            text-align: center;
+        }
+        header {
+            padding: 60px 20px;
+            background: radial-gradient(circle at top, #ff80e8, #ffffff);
+            box-shadow: 0 0 25px #8B00FF88;
+        }
+        header h1 {
+            font-size: 42px;
+            text-shadow: 0 0 12px #FF69B4;
+        }
+        header p {
+            font-size: 18px;
+            color: #C3A6FF;
+        }
+        .input-box {
+            background: #ffffff;
+            border-radius: 30px;
+            padding: 10px;
+            width: 60%;
+            max-width: 400px;
+            margin: 20px auto;
+            box-shadow: 0 0 15px #FF69B4AA;
+        }
+        .input-box input {
+            background: transparent;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #8B00FF;
+            width: 100%;
+            outline: none;
+            text-align: center;
+        }
+        .btn {
+            background: linear-gradient(90deg, #FF69B4, #8B00FF);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 0 15px #FF69B4AA;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            box-shadow: 0 0 25px #3EF3F3;
+            background: linear-gradient(90deg, #8B00FF, #3EF3F3);
+        }
+        .logo {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+        .container {
+            max-width: 450px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            display: none; /* Initially hidden */
+            position: relative; /* For positioning the small box */
+        }
+        h1 {
+            text-align: center;
+            color: #4b0082;
+        }
+        .balance {
+            font-size: 18px;
+            margin: 10px 0;
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin: 12px 0;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #8B00FF; /* Purple text */
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        .transaction-history {
+            margin-top: 20px;
+            text-align: left;
+            color: #333;
+            max-height: 150px; /* Maximum height for scrolling */
+            overflow-y: auto; /* Enable vertical scrolling */
+            border: 1px solid #FF69B4; /* Border color */
+            border-radius: 8px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .transaction-history::-webkit-scrollbar {
+            width: 12px; /* Width of the scrollbar */
+        }
+        .transaction-history::-webkit-scrollbar-thumb {
+            background: #8B00FF; /* Color of the scrollbar thumb */
+            border-radius: 10px; /* Rounded corners */
+        }
+        .transaction-history::-webkit-scrollbar-track {
+            background: #FF69B4; /* Color of the scrollbar track */
+        }
+        .price-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .price-box input {
+            width: 45%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            color: #8B00FF;
+            text-align: center;
+        }
+        .total-cost {
+            margin-bottom: 10px;
+            font-size: 20px;
+            color: #FF69B4;
+        }
+        .day-counter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #FF69B4;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 16px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        .game-over {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(128, 0, 128, 0.9); /* Purple background */
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            padding-top: 20%;
+            z-index: 1000; /* Ensure it is on top */
+            border-radius: 12px;
+        }
+        .bank-info {
+            margin: 20px 0;
+            font-size: 18px;
+            color: #333;
+        }
+        .loan-form {
+            display: none;
+            background: #FFB6C1; /* Light pink background */
+            color: #8B00FF; /* Purple text */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1001; /* Ensure it is on top of other elements */
+        }
+        .loan-form input {
+            margin: 5px 0;
+            border: 1px solid #8B00FF; /* Purple border */
+            border-radius: 6px;
+            padding: 8px;
+        }
+        .business-form {
+            display: none;
+            background: #FFB6C1; /* Light pink background */
+            color: #8B00FF; /* Purple text */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1001; /* Ensure it is on top of other elements */
+        }
+        .close-form {
+            cursor: pointer;
+            color: red;
+            font-weight: bold;
+        }
+        .account-form {
+            display: none;
+            background: #FFB6C1; /* Light pink background */
+            color: #8B00FF; /* Purple text */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1001; /* Ensure it is on top of other elements */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://uploadkon.ir/uploads/251425_25Picture1.png" alt="TokTok Plus Logo" class="logo">
+        <h1>✨ توک‌توک پلاس ✨</h1>
+        <p>از صفر شروع کن، دنیای خودت رو بساز</p>
+        <div class="input-box">
+            <input type="text" placeholder="لطفا نام خود را وارد کنید" id="username">
+        </div>
+        <button class="btn" onclick="showPrivateContent()">شروع ماجراجویی</button>
+    </header>
+
+    <div class="container" id="privateContent">
+        <h1 id="userGreeting"></h1>
+        <div class="bank-info" id="bankInfo">🏦 بانک ملکیانس: 111 اوبرو</div>
+        <div class="balance" id="coins">💰 موجودی کوین: 10</div>
+        <div class="balance" id="properties">🏠 املاک: 0</div>
+        <div class="balance" id="mortgage">📜 املاک در رهن: 0</div>
+        <div class="balance" id="businessIncome">💼 درآمد کسب و کار: 0</div>
+        <div class="total-cost" id="totalCost">🔹 مجموع هزینه: 0</div>
+        
+        <div class="price-box">
+            <input type="number" id="amount" placeholder="مقدار" oninput="calculateTotalCost()">
+            <input type="number" id="propertyPrice" value="5" placeholder="قیمت هر ملک" oninput="calculateTotalCost()">
+        </div>
+
+        <button class="btn" onclick="confirmAction('addProperty')">➕ افزودن ملک</button>
+        <button class="btn" onclick="showBusinessForm()">💼 کسب و کار</button>
+        <button class="btn" onclick="showAccountForm()">💼 حساب شغلی</button>
+        <button class="btn" onclick="showLoanForm()">💵 وام بگیرید</button>
+        <button class="btn" onclick="showRepaymentForm()">💳 پرداخت وام</button>
+        <button class="btn" onclick="confirmAction('mortgageProperty')">🏦 رهن ملک</button>
+        <button class="btn" onclick="confirmAction('releaseMortgage')">🔓 آزاد کردن رهن</button>
+        <button class="btn" onclick="confirmAction('sellProperty')">💵 فروش ملک</button>
+        <button class="btn" onclick="confirmAction('withdrawMoney')">💸 برداشت پول</button>
+        <button class="btn" onclick="confirmAction('increaseBalance')">➕ افزایش موجودی</button>
+
+        <div class="transaction-history" id="transactionHistory"></div>
+
+        <div class="day-counter" id="dayCounter">روزها: 0</div>
+    </div>
+
+    <div class="game-over" id="gameOverMessage">🚨 پادشاهی شما سقوط کرد! 🚨</div>
+
+    <div class="loan-form" id="loanForm">
+        <span class="close-form" onclick="closeLoanForm()">✖</span>
+        <h2>وام از بانک ملکیانس</h2>
+        <div class="form-group">
+            <label for="loanAmount">مقدار وام:</label>
+            <input type="number" id="loanAmount" placeholder="مقدار وام">
+        </div>
+        <div class="form-group">
+            <label for="loanDays">تعداد روزها (حداکثر 5):</label>
+            <input type="number" id="loanDays" max="5" placeholder="تعداد روزها">
+        </div>
+        <button class="btn" onclick="takeLoan()">گرفتن وام</button>
+    </div>
+
+    <div class="loan-form" id="repaymentForm">
+        <span class="close-form" onclick="closeRepaymentForm()">✖</span>
+        <h2>پرداخت وام به بانک ملکیانس</h2>
+        <div class="form-group">
+            <label for="repaymentAmount">مقدار پرداخت:</label>
+            <input type="number" id="repaymentAmount" placeholder="مقدار پرداخت">
+        </div>
+        <button class="btn" onclick="repayLoan()">پرداخت وام</button>
+    </div>
+
+    <div class="business-form" id="businessForm">
+        <span class="close-form" onclick="closeBusinessForm()">✖</span>
+        <h2>کسب و کار</h2>
+        <div class="form-group">
+            <label for="businessName">نام شغل:</label>
+            <input type="text" id="businessName" placeholder="نام شغل">
+        </div>
+        <div class="form-group">
+            <label for="businessPrepayment">پیش پرداخت:</label>
+            <input type="number" id="businessPrepayment" placeholder="پیش پرداخت (حداقل 50)">
+        </div>
+        <button class="btn" onclick="startBusiness()">شروع کسب و کار</button>
+    </div>
+
+    <div class="account-form" id="accountForm">
+        <span class="close-form" onclick="closeAccountForm()">✖</span>
+        <h2>حساب شغلی</h2>
+        <div class="form-group">
+            <label for="transferAmount">مقدار انتقال به موجودی:</label>
+            <input type="number" id="transferAmount" placeholder="مقدار انتقال">
+        </div>
+        <button class="btn" onclick="transferToMainAccount()">انتقال به حساب اصلی</button>
+        <div class="form-group">
+            <label for="incomeAmount">مقدار افزایش درآمد:</label>
+            <input type="number" id="incomeAmount" placeholder="مقدار افزایش درآمد">
+        </div>
+        <button class="btn" onclick="increaseBusinessIncome()">افزایش درآمد</button>
+    </div>
+
+    <audio id="audio" src="https://uploadkon.ir/uploads/f79729_25ba054c65e587c423032356c4d01b3663-ftkoplqj.mp3"></audio>
+
+    <script>
+        let coins = 10;
+        let properties = 0;
+        let mortgage = 0;
+        let transactionHistory = [];
+        let daysPassed = 0;
+        let bankBalance = 111; // موجودی بانک ملکیانس
+        let loanTaken = 0; // مقدار وام گرفته شده
+        let businessIncome = 0; // درآمد کسب و کار
+
+        function updateUI() {
+            document.getElementById("coins").innerText = "💰 موجودی کوین: " + coins;
+            document.getElementById("properties").innerText = "🏠 املاک: " + properties;
+            document.getElementById("mortgage").innerText = "📜 املاک در رهن: " + mortgage;
+            document.getElementById("businessIncome").innerText = "💼 درآمد کسب و کار: " + businessIncome;
+            document.getElementById("transactionHistory").innerHTML = transactionHistory.join('<br>');
+            document.getElementById("bankInfo").innerText = `🏦 بانک ملکیانس: ${bankBalance} اوبرو`;
+            document.getElementById("dayCounter").innerText = `روزها: ${daysPassed}`;
+
+            // Check if coins are zero and show game over message
+            if (coins <= 0) {
+                endGame();
+            }
+        }
+
+        function getAmount() {
+            let amount = parseInt(document.getElementById("amount").value);
+            return isNaN(amount) || amount <= 0 ? 0 : amount;
+        }
+
+        function calculateTotalCost() {
+            const pricePerProperty = parseInt(document.getElementById("propertyPrice").value);
+            const quantity = getAmount();
+            const totalCost = pricePerProperty * quantity;
+            document.getElementById("totalCost").innerText = `🔹 مجموع هزینه: ${totalCost}`;
+        }
+
+        function confirmAction(action) {
+            const amount = getAmount();
+            if (amount > 0) {
+                const confirmation = confirm(`آیا مطمئن هستید که می‌خواهید ${action.replace(/([A-Z])/g, ' $1').toLowerCase()} با مقدار ${amount} انجام دهید؟`);
+                if (confirmation) {
+                    document.getElementById("audio").play(); // پخش صدا
+                    switch (action) {
+                        case 'addProperty':
+                            addProperty();
+                            break;
+                        case 'mortgageProperty':
+                            mortgageProperty();
+                            break;
+                        case 'releaseMortgage':
+                            releaseMortgage();
+                            break;
+                        case 'sellProperty':
+                            sellProperty();
+                            break;
+                        case 'withdrawMoney':
+                            withdrawMoney();
+                            break;
+                        case 'increaseBalance':
+                            increaseBalance();
+                            break;
+                    }
+                }
+            } else {
+                alert("لطفاً مقدار معتبر وارد کنید.");
+            }
+        }
+
+        function addProperty() {
+            let amount = getAmount();
+            const totalCost = parseInt(document.getElementById("totalCost").innerText.replace(/[^0-9]/g, ''));
+            if (coins >= totalCost) {
+                properties += amount;
+                coins -= totalCost; // خرید ملک با کوین
+                transactionHistory.push(`ملک به تعداد ${amount} اضافه شد.`);
+            } else {
+                alert("کوین کافی ندارید!");
+            }
+            updateUI();
+        }
+
+        function mortgageProperty() {
+            let amount = getAmount();
+            if (properties >= amount) {
+                properties -= amount;
+                mortgage += amount;
+                coins += amount * 2; // رهن = دریافت کوین بیشتر
+                transactionHistory.push(`ملک به تعداد ${amount} رهن شد.`);
+            } else {
+                alert("ملک کافی ندارید!");
+            }
+            updateUI();
+        }
+
+        function releaseMortgage() {
+            let amount = getAmount();
+            if (mortgage >= amount && coins >= amount * 2) {
+                mortgage -= amount;
+                properties += amount;
+                coins -= amount * 2; // پس دادن پول برای آزاد کردن رهن
+                transactionHistory.push(`ملک به تعداد ${amount} آزاد شد.`);
+            } else {
+                alert("امکان آزادسازی وجود ندارد (کوین یا ملک کافی نیست)!");
+            }
+            updateUI();
+        }
+
+        function sellProperty() {
+            let amount = getAmount();
+            if (properties >= amount) {
+                properties -= amount;
+                coins += amount * 3; // فروش ملک
+                transactionHistory.push(`ملک به تعداد ${amount} فروخته شد.`);
+            } else {
+                alert("ملک کافی برای فروش ندارید!");
+            }
+            updateUI();
+        }
+
+        function withdrawMoney() {
+            let amount = getAmount();
+            if (coins >= amount) {
+                coins -= amount; // برداشت پول
+                transactionHistory.push(`💸 برداشت پول به مقدار ${amount} انجام شد.`);
+            } else {
+                alert("کوین کافی برای برداشت ندارید!");
+            }
+            updateUI();
+        }
+
+        function increaseBalance() {
+            let amount = getAmount();
+            coins += amount; // افزایش موجودی
+            transactionHistory.push(`💰 موجودی به مقدار ${amount} افزایش یافت.`);
+            updateUI();
+        }
+
+        function showPrivateContent() {
+            const username = document.getElementById("username").value;
+            if (username) {
+                document.getElementById("userGreeting").innerText = username; // فقط نام کاربر نمایش داده می‌شود
+                document.getElementById("privateContent").style.display = "block";
+                document.querySelector("header").style.display = "none"; // Hide header after starting
+                updateUI();
+                startDayCounter(); // Start the day counter
+            } else {
+                alert("لطفاً نام خود را وارد کنید.");
+            }
+        }
+
+        function startDayCounter() {
+            setInterval(() => {
+                daysPassed++;
+                updateUI();
+            }, 5 * 60 * 1000); // Every 5 minutes
+        }
+
+        function endGame() {
+            document.getElementById("privateContent").style.display = "none"; // Hide game content
+            document.getElementById("gameOverMessage").style.display = "block"; // Show game over message
+        }
+
+        function showLoanForm() {
+            document.getElementById("loanForm").style.display = "block"; // Show loan form
+        }
+
+        function closeLoanForm() {
+            document.getElementById("loanForm").style.display = "none"; // Hide loan form
+        }
+
+        function takeLoan() {
+            const loanAmount = parseInt(document.getElementById("loanAmount").value);
+            const loanDays = parseInt(document.getElementById("loanDays").value);
+            if (loanAmount > 0 && loanDays > 0 && loanDays <= 5) {
+                if (bankBalance >= loanAmount) {
+                    coins += loanAmount; // Add loan amount to user's coins
+                    bankBalance -= loanAmount; // Deduct loan amount from bank
+                    loanTaken += loanAmount; // Track the total loan taken
+                    transactionHistory.push(`وام به مقدار ${loanAmount} از بانک ملکیانس گرفته شد.`);
+                    closeLoanForm();
+                    updateUI();
+                } else {
+                    alert("بانک ملکیانس موجودی کافی ندارد!");
+                }
+            } else {
+                alert("لطفاً مقدار وام و تعداد روزها را به درستی وارد کنید.");
+            }
+        }
+
+        function showRepaymentForm() {
+            document.getElementById("repaymentForm").style.display = "block"; // Show repayment form
+        }
+
+        function closeRepaymentForm() {
+            document.getElementById("repaymentForm").style.display = "none"; // Hide repayment form
+        }
+
+        function repayLoan() {
+            const repaymentAmount = parseInt(document.getElementById("repaymentAmount").value);
+            if (repaymentAmount > 0 && repaymentAmount <= loanTaken) {
+                if (coins >= repaymentAmount) {
+                    coins -= repaymentAmount; // Deduct repayment amount from user's coins
+                    bankBalance += repaymentAmount; // Add repayment amount to bank
+                    loanTaken -= repaymentAmount; // Deduct from total loan taken
+                    transactionHistory.push(`پرداخت وام به مقدار ${repaymentAmount} به بانک ملکیانس انجام شد.`);
+                    closeRepaymentForm();
+                    updateUI();
+                } else {
+                    alert("موجودی کافی برای پرداخت وام ندارید!");
+                }
+            } else {
+                alert("لطفاً مقدار پرداخت را به درستی وارد کنید.");
+            }
+        }
+
+        function showBusinessForm() {
+            document.getElementById("businessForm").style.display = "block"; // Show business form
+        }
+
+        function closeBusinessForm() {
+            document.getElementById("businessForm").style.display = "none"; // Hide business form
+        }
+
+        function startBusiness() {
+            const businessName = document.getElementById("businessName").value;
+            const prepayment = parseInt(document.getElementById("businessPrepayment").value);
+            if (businessName && prepayment >= 50) {
+                if (coins >= prepayment) {
+                    coins -= prepayment; // Deduct prepayment from user's coins
+                    businessIncome += prepayment; // Add prepayment to business income
+                    transactionHistory.push(`کسب و کار "${businessName}" با پیش پرداخت ${prepayment} شروع شد.`);
+                    closeBusinessForm();
+                    updateUI();
+                } else {
+                    alert("کوین کافی برای شروع کسب و کار ندارید!");
+                }
+            } else {
+                alert("لطفاً نام شغل و پیش پرداخت معتبر وارد کنید (حداقل 50).");
+            }
+        }
+
+        function showAccountForm() {
+            document.getElementById("accountForm").style.display = "block"; // Show account form
+        }
+
+        function closeAccountForm() {
+            document.getElementById("accountForm").style.display = "none"; // Hide account form
+        }
+
+        function transferToMainAccount() {
+            const transferAmount = parseInt(document.getElementById("transferAmount").value);
+            if (transferAmount > 0 && transferAmount <= businessIncome) {
+                businessIncome -= transferAmount; // Deduct from business income
+                coins += transferAmount; // Add to main account
+                transactionHistory.push(`💸 انتقال ${transferAmount} به حساب اصلی انجام شد.`);
+                closeAccountForm();
+                updateUI();
+            } else {
+                alert("لطفاً مقدار معتبر وارد کنید یا موجودی کافی نیست.");
+            }
+        }
+
+        function increaseBusinessIncome() {
+            const incomeAmount = parseInt(document.getElementById("incomeAmount").value);
+            if (incomeAmount > 0) {
+                businessIncome += incomeAmount; // Increase business income
+                transactionHistory.push(`💰 افزایش درآمد به مقدار ${incomeAmount} انجام شد.`);
+                closeAccountForm();
+                updateUI();
+            } else {
+                alert("لطفاً مقدار معتبر وارد کنید.");
+            }
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
