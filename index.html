@@ -219,6 +219,48 @@
             transform: translate(-50%, -50%);
             z-index: 1001; /* Ensure it is on top of other elements */
         }
+        .personal-bank-form {
+            display: none;
+            background: #FFB6C1; /* Light pink background */
+            color: #8B00FF; /* Purple text */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1001; /* Ensure it is on top of other elements */
+        }
+        .clear-storage-btn {
+            margin-top: 20px;
+            background: #FF4500; /* Red background for clear storage */
+        }
+        .business-select {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #8B00FF; /* Purple border */
+            width: 100%;
+        }
+        .business-info {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #333;
+        }
+        .sell-business-form {
+            display: none;
+            background: #FFB6C1; /* Light pink background */
+            color: #8B00FF; /* Purple text */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1001; /* Ensure it is on top of other elements */
+        }
     </style>
 </head>
 <body>
@@ -230,15 +272,25 @@
             <input type="text" placeholder="لطفا نام خود را وارد کنید" id="username">
         </div>
         <button class="btn" onclick="showPrivateContent()">شروع ماجراجویی</button>
+        <button class="btn clear-storage-btn" onclick="clearStorage()">پاک کردن اطلاعات</button>
     </header>
 
     <div class="container" id="privateContent">
         <h1 id="userGreeting"></h1>
         <div class="bank-info" id="bankInfo">🏦 بانک ملکیانس: 111 اوبرو</div>
+
+        <!-- Business Info Section -->
+        <div class="business-info">
+            <label for="businessSelect">انتخاب کسب و کار:</label>
+            <select id="businessSelect" class="business-select" onchange="updateSelectedBusinessBalance()"></select>
+            <div id="selectedBusinessBalance">💼 موجودی کسب و کار انتخاب شده: 0</div>
+        </div>
+
         <div class="balance" id="coins">💰 موجودی کوین: 10</div>
         <div class="balance" id="properties">🏠 املاک: 0</div>
         <div class="balance" id="mortgage">📜 املاک در رهن: 0</div>
         <div class="balance" id="businessIncome">💼 درآمد کسب و کار: 0</div>
+        <div class="balance" id="personalBankBalanceMain">🏦 موجودی بانک شخصی: 0</div> <!-- نمایش موجودی بانک شخصی -->
         <div class="total-cost" id="totalCost">🔹 مجموع هزینه: 0</div>
         
         <div class="price-box">
@@ -246,9 +298,36 @@
             <input type="number" id="propertyPrice" value="5" placeholder="قیمت هر ملک" oninput="calculateTotalCost()">
         </div>
 
+        <!-- جاگذاری کد بانک شخصی -->
+        <div class="personal-bank-form" id="personalBankForm">
+            <span class="close-form" onclick="closePersonalBankForm()">✖</span>
+            <h2>🏦 بانک شخصی</h2>
+            
+            <div class="form-group">
+                <label for="depositAmount">مقدار سپرده‌گذاری:</label>
+                <input type="number" id="depositAmount" placeholder="مقدار سپرده‌گذاری">
+                <button class="btn" onclick="depositMoney()">💰 سپرده‌گذاری</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="withdrawAmount">مقدار برداشت:</label>
+                <input type="number" id="withdrawAmount" placeholder="مقدار برداشت">
+                <button class="btn" onclick="withdrawMoney()">💸 برداشت</button>
+            </div>
+
+            <div class="bank-info">
+                <div id="personalBankBalanceForm">🏦 موجودی بانک شخصی: 0</div>
+                <div id="lastDeposit">آخرین واریز: 0</div>
+                <div id="lastWithdrawal">آخرین برداشت: 0</div>
+                <div id="interestAdded">سود اضافه شده: 0</div>
+                <div id="emergencyWithdrawalActive">برداشت اضطراری فعال نیست</div>
+            </div>
+        </div>
+
         <button class="btn" onclick="confirmAction('addProperty')">➕ افزودن ملک</button>
         <button class="btn" onclick="showBusinessForm()">💼 کسب و کار</button>
         <button class="btn" onclick="showAccountForm()">💼 حساب شغلی</button>
+        <button class="btn" onclick="showPersonalBankForm()">🏦 بانک شخصی</button>
         <button class="btn" onclick="showLoanForm()">💵 وام بگیرید</button>
         <button class="btn" onclick="showRepaymentForm()">💳 پرداخت وام</button>
         <button class="btn" onclick="confirmAction('mortgageProperty')">🏦 رهن ملک</button>
@@ -256,6 +335,7 @@
         <button class="btn" onclick="confirmAction('sellProperty')">💵 فروش ملک</button>
         <button class="btn" onclick="confirmAction('withdrawMoney')">💸 برداشت پول</button>
         <button class="btn" onclick="confirmAction('increaseBalance')">➕ افزایش موجودی</button>
+        <button class="btn" onclick="showSellBusinessForm()">💼 فروش کسب و کار</button> <!-- دکمه فروش کسب و کار -->
 
         <div class="transaction-history" id="transactionHistory"></div>
 
@@ -309,7 +389,7 @@
             <label for="transferAmount">مقدار انتقال به موجودی:</label>
             <input type="number" id="transferAmount" placeholder="مقدار انتقال">
         </div>
-        <button class="btn" onclick="transferToMainAccount()">انتقال به حساب اصلی</button>
+        <button class="btn" onclick="transferToSelectedBusiness()">انتقال به حساب انتخاب شده</button>
         <div class="form-group">
             <label for="incomeAmount">مقدار افزایش درآمد:</label>
             <input type="number" id="incomeAmount" placeholder="مقدار افزایش درآمد">
@@ -317,31 +397,82 @@
         <button class="btn" onclick="increaseBusinessIncome()">افزایش درآمد</button>
     </div>
 
+    <div class="sell-business-form" id="sellBusinessForm">
+        <span class="close-form" onclick="closeSellBusinessForm()">✖</span>
+        <h2>فروش کسب و کار</h2>
+        <div class="form-group">
+            <label for="sellBusinessSelect">انتخاب کسب و کار:</label>
+            <select id="sellBusinessSelect" class="business-select"></select>
+        </div>
+        <div class="form-group">
+            <label for="sellPrice">قیمت فروش:</label>
+            <input type="number" id="sellPrice" placeholder="قیمت فروش">
+        </div>
+        <button class="btn" onclick="sellBusiness()">فروش کسب و کار</button>
+    </div>
+
     <audio id="audio" src="https://uploadkon.ir/uploads/f79729_25ba054c65e587c423032356c4d01b3663-ftkoplqj.mp3"></audio>
 
     <script>
-        let coins = 10;
-        let properties = 0;
-        let mortgage = 0;
-        let transactionHistory = [];
-        let daysPassed = 0;
+        let coins = localStorage.getItem('coins') ? parseInt(localStorage.getItem('coins')) : 10;
+        let properties = localStorage.getItem('properties') ? parseInt(localStorage.getItem('properties')) : 0;
+        let mortgage = localStorage.getItem('mortgage') ? parseInt(localStorage.getItem('mortgage')) : 0;
+        let transactionHistory = JSON.parse(localStorage.getItem('transactionHistory')) || [];
+        let daysPassed = localStorage.getItem('daysPassed') ? parseInt(localStorage.getItem('daysPassed')) : 0;
         let bankBalance = 111; // موجودی بانک ملکیانس
         let loanTaken = 0; // مقدار وام گرفته شده
-        let businessIncome = 0; // درآمد کسب و کار
+        let businessList = JSON.parse(localStorage.getItem('businessList')) || []; // لیست کسب و کارها
+        let repaymentInterval; // برای مدیریت پرداخت اقساط
+        let personalBankBalance = 0; // موجودی بانک شخصی
 
         function updateUI() {
             document.getElementById("coins").innerText = "💰 موجودی کوین: " + coins;
             document.getElementById("properties").innerText = "🏠 املاک: " + properties;
             document.getElementById("mortgage").innerText = "📜 املاک در رهن: " + mortgage;
-            document.getElementById("businessIncome").innerText = "💼 درآمد کسب و کار: " + businessIncome;
-            document.getElementById("transactionHistory").innerHTML = transactionHistory.join('<br>');
+            document.getElementById("businessIncome").innerText = "💼 درآمد کسب و کار: " + businessList.reduce((sum, business) => sum + business.balance, 0); // جمع موجودی تمام کسب و کارها
+            document.getElementById("personalBankBalanceMain").innerText = "🏦 موجودی بانک شخصی: " + personalBankBalance; // نمایش موجودی بانک شخصی
+            document.getElementById("transactionHistory").innerHTML = transactionHistory.join('<br>'); // رفع خطای سینتکسی
             document.getElementById("bankInfo").innerText = `🏦 بانک ملکیانس: ${bankBalance} اوبرو`;
             document.getElementById("dayCounter").innerText = `روزها: ${daysPassed}`;
+
+            // بارگذاری کسب و کارها در باکس کشویی
+            const businessSelect = document.getElementById("businessSelect");
+            const sellBusinessSelect = document.getElementById("sellBusinessSelect");
+            businessSelect.innerHTML = ""; // پاک کردن گزینه‌های قبلی
+            sellBusinessSelect.innerHTML = ""; // پاک کردن گزینه‌های قبلی
+            businessList.forEach((business, index) => {
+                const option = document.createElement("option");
+                option.value = index;
+                option.textContent = `${business.name} - موجودی: ${business.balance}`;
+                businessSelect.appendChild(option);
+                sellBusinessSelect.appendChild(option.cloneNode(true)); // کپی گزینه برای فروش کسب و کار
+            });
+
+            // نمایش موجودی کسب و کار انتخاب شده
+            if (businessSelect.selectedIndex >= 0) {
+                const selectedBusiness = businessList[businessSelect.value];
+                document.getElementById("selectedBusinessBalance").innerText = `💼 موجودی کسب و کار انتخاب شده: ${selectedBusiness.balance}`;
+            }
 
             // Check if coins are zero and show game over message
             if (coins <= 0) {
                 endGame();
             }
+
+            // ذخیره‌سازی مقادیر در Local Storage
+            localStorage.setItem('coins', coins);
+            localStorage.setItem('properties', properties);
+            localStorage.setItem('mortgage', mortgage);
+            localStorage.setItem('transactionHistory', JSON.stringify(transactionHistory));
+            localStorage.setItem('daysPassed', daysPassed);
+            localStorage.setItem('businessList', JSON.stringify(businessList)); // ذخیره لیست کسب و کارها
+            localStorage.setItem('personalBankBalance', personalBankBalance);
+        }
+
+        function clearStorage() {
+            localStorage.clear(); // پاک کردن تمام اطلاعات از Local Storage
+            alert("تمام اطلاعات پاک شد!");
+            location.reload(); // بارگذاری مجدد صفحه
         }
 
         function getAmount() {
@@ -451,10 +582,16 @@
         }
 
         function increaseBalance() {
-            let amount = getAmount();
-            coins += amount; // افزایش موجودی
-            transactionHistory.push(`💰 موجودی به مقدار ${amount} افزایش یافت.`);
-            updateUI();
+            const selectedBusinessIndex = document.getElementById("businessSelect").value;
+            let amount = parseInt(document.getElementById("incomeAmount").value);
+            if (amount > 0) {
+                businessList[selectedBusinessIndex].balance += amount; // افزایش درآمد کسب و کار انتخاب شده
+                coins -= amount; // کسر از موجودی اصلی
+                transactionHistory.push(`💰 افزایش درآمد به مقدار ${amount} برای ${businessList[selectedBusinessIndex].name} انجام شد.`);
+                updateUI();
+            } else {
+                alert("لطفاً مقدار معتبر وارد کنید.");
+            }
         }
 
         function showPrivateContent() {
@@ -497,16 +634,38 @@
                 if (bankBalance >= loanAmount) {
                     coins += loanAmount; // Add loan amount to user's coins
                     bankBalance -= loanAmount; // Deduct loan amount from bank
-                    loanTaken += loanAmount; // Track the total loan taken
+                    loanTaken = loanAmount; // Track the total loan taken
+                    const installment = loanAmount / loanDays; // محاسبه قسط
                     transactionHistory.push(`وام به مقدار ${loanAmount} از بانک ملکیانس گرفته شد.`);
                     closeLoanForm();
                     updateUI();
+                    startRepayment(installment, loanDays); // شروع پرداخت اقساط
                 } else {
                     alert("بانک ملکیانس موجودی کافی ندارد!");
                 }
             } else {
                 alert("لطفاً مقدار وام و تعداد روزها را به درستی وارد کنید.");
             }
+        }
+
+        function startRepayment(installment, days) {
+            repaymentInterval = setInterval(() => {
+                if (days > 0) {
+                    if (coins >= installment) {
+                        coins -= installment; // کسر قسط از موجودی
+                        transactionHistory.push(`💳 پرداخت قسط به مقدار ${installment} انجام شد.`);
+                        days--;
+                    } else {
+                        alert("موجودی کافی برای پرداخت قسط ندارید!");
+                        clearInterval(repaymentInterval); // متوقف کردن پرداخت اقساط
+                        return;
+                    }
+                } else {
+                    clearInterval(repaymentInterval); // متوقف کردن پرداخت اقساط
+                    alert("تمام اقساط پرداخت شد!");
+                }
+                updateUI();
+            }, 5 * 60 * 1000); // هر 5 دقیقه
         }
 
         function showRepaymentForm() {
@@ -549,7 +708,8 @@
             if (businessName && prepayment >= 50) {
                 if (coins >= prepayment) {
                     coins -= prepayment; // Deduct prepayment from user's coins
-                    businessIncome += prepayment; // Add prepayment to business income
+                    // اضافه کردن کسب و کار جدید به لیست
+                    businessList.push({ name: businessName, balance: prepayment });
                     transactionHistory.push(`کسب و کار "${businessName}" با پیش پرداخت ${prepayment} شروع شد.`);
                     closeBusinessForm();
                     updateUI();
@@ -569,32 +729,108 @@
             document.getElementById("accountForm").style.display = "none"; // Hide account form
         }
 
-        function transferToMainAccount() {
+        function transferToSelectedBusiness() {
+            const selectedBusinessIndex = document.getElementById("businessSelect").value;
             const transferAmount = parseInt(document.getElementById("transferAmount").value);
-            if (transferAmount > 0 && transferAmount <= businessIncome) {
-                businessIncome -= transferAmount; // Deduct from business income
-                coins += transferAmount; // Add to main account
-                transactionHistory.push(`💸 انتقال ${transferAmount} به حساب اصلی انجام شد.`);
-                closeAccountForm();
-                updateUI();
+            
+            if (transferAmount > 0 && businessList[selectedBusinessIndex].balance >= transferAmount) {
+                // کم کردن از موجودی کسب و کار انتخاب شده
+                businessList[selectedBusinessIndex].balance -= transferAmount; 
+                // اضافه کردن به موجودی اصلی
+                coins += transferAmount; 
+                transactionHistory.push(`💸 انتقال ${transferAmount} به موجودی انجام شد.`);
+                closeAccountForm(); // بستن فرم حساب
+                updateUI(); // بروزرسانی رابط کاربری
             } else {
                 alert("لطفاً مقدار معتبر وارد کنید یا موجودی کافی نیست.");
             }
         }
 
         function increaseBusinessIncome() {
-            const incomeAmount = parseInt(document.getElementById("incomeAmount").value);
-            if (incomeAmount > 0) {
-                businessIncome += incomeAmount; // Increase business income
-                transactionHistory.push(`💰 افزایش درآمد به مقدار ${incomeAmount} انجام شد.`);
-                closeAccountForm();
+            const selectedBusinessIndex = document.getElementById("businessSelect").value;
+            let amount = parseInt(document.getElementById("incomeAmount").value);
+            if (amount > 0) {
+                businessList[selectedBusinessIndex].balance += amount; // افزایش درآمد کسب و کار انتخاب شده
+                coins -= amount; // کسر از موجودی اصلی
+                transactionHistory.push(`💰 افزایش درآمد به مقدار ${amount} برای ${businessList[selectedBusinessIndex].name} انجام شد.`);
                 updateUI();
             } else {
                 alert("لطفاً مقدار معتبر وارد کنید.");
             }
         }
 
-        updateUI();
+        function showSellBusinessForm() {
+            document.getElementById("sellBusinessForm").style.display = "block"; // Show sell business form
+            updateSellBusinessSelect(); // Update the sell business select options
+        }
+
+        function closeSellBusinessForm() {
+            document.getElementById("sellBusinessForm").style.display = "none"; // Hide sell business form
+        }
+
+        function updateSellBusinessSelect() {
+            const sellBusinessSelect = document.getElementById("sellBusinessSelect");
+            sellBusinessSelect.innerHTML = ""; // پاک کردن قبلی
+            businessList.forEach((business, index) => {
+                const option = document.createElement("option");
+                option.value = index;
+                option.textContent = `${business.name} - موجودی: ${business.balance}`;
+                sellBusinessSelect.appendChild(option);
+            });
+        }
+
+        function sellBusiness() {
+            const selectedBusinessIndex = document.getElementById("sellBusinessSelect").value;
+            const sellPrice = parseInt(document.getElementById("sellPrice").value);
+            if (sellPrice > 0) {
+                const business = businessList[selectedBusinessIndex];
+                coins += sellPrice; // Add selling price to coins
+                transactionHistory.push(`💼 فروش کسب و کار "${business.name}" به قیمت ${sellPrice} انجام شد.`);
+                businessList.splice(selectedBusinessIndex, 1); // Remove the business from the list
+                updateUI();
+                closeSellBusinessForm();
+            } else {
+                alert("لطفاً قیمت معتبر وارد کنید.");
+            }
+        }
+
+        function showPersonalBankForm() {
+            document.getElementById("personalBankForm").style.display = "block"; // نمایش فرم بانک شخصی
+        }
+
+        function closePersonalBankForm() {
+            document.getElementById("personalBankForm").style.display = "none"; // پنهان کردن فرم بانک شخصی
+        }
+
+        function depositMoney() {
+            const depositAmount = parseInt(document.getElementById("depositAmount").value);
+    
+            if (depositAmount > 0 && coins >= depositAmount) {
+                personalBankBalance += depositAmount; // اضافه کردن به موجودی بانک شخصی
+                coins -= depositAmount; // کسر از موجودی اصلی
+                transactionHistory.push(`💰 واریز ${depositAmount} به بانک شخصی انجام شد.`);
+                closePersonalBankForm(); // بستن فرم بانک شخصی
+                updateUI(); // بروزرسانی رابط کاربری
+            } else {
+                alert("لطفاً مقدار معتبر وارد کنید یا موجودی کافی نیست.");
+            }
+        }
+
+        function withdrawMoney() {
+            const withdrawAmount = parseInt(document.getElementById("withdrawAmount").value);
+    
+            if (withdrawAmount > 0 && personalBankBalance >= withdrawAmount) {
+                personalBankBalance -= withdrawAmount; // کسر از موجودی بانک شخصی
+                coins += withdrawAmount; // اضافه کردن به موجودی اصلی
+                transactionHistory.push(`💸 برداشت ${withdrawAmount} از بانک شخصی انجام شد.`);
+                closePersonalBankForm(); // بستن فرم بانک شخصی
+                updateUI(); // بروزرسانی رابط کاربری
+            } else {
+                alert("لطفاً مقدار معتبر وارد کنید یا موجودی کافی نیست.");
+            }
+        }
+
+        updateUI(); // بارگذاری اولیه اطلاعات
     </script>
 </body>
 </html>
