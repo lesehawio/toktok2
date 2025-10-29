@@ -308,12 +308,6 @@
                 <input type="number" id="depositAmount" placeholder="مقدار سپرده‌گذاری">
                 <button class="btn" onclick="depositMoney()">💰 سپرده‌گذاری</button>
             </div>
-            
-            <div class="form-group">
-                <label for="withdrawAmount">مقدار برداشت:</label>
-                <input type="number" id="withdrawAmount" placeholder="مقدار برداشت">
-                <button class="btn" onclick="withdrawMoney()">💸 برداشت</button>
-            </div>
 
             <div class="bank-info">
                 <div id="personalBankBalanceForm">🏦 موجودی بانک شخصی: 0</div>
@@ -333,8 +327,6 @@
         <button class="btn" onclick="confirmAction('mortgageProperty')">🏦 رهن ملک</button>
         <button class="btn" onclick="confirmAction('releaseMortgage')">🔓 آزاد کردن رهن</button>
         <button class="btn" onclick="confirmAction('sellProperty')">💵 فروش ملک</button>
-        <button class="btn" onclick="confirmAction('withdrawMoney')">💸 برداشت پول</button>
-        <button class="btn" onclick="confirmAction('increaseBalance')">➕ افزایش موجودی</button>
         <button class="btn" onclick="showSellBusinessForm()">💼 فروش کسب و کار</button> <!-- دکمه فروش کسب و کار -->
 
         <div class="transaction-history" id="transactionHistory"></div>
@@ -506,12 +498,6 @@
                         case 'sellProperty':
                             sellProperty();
                             break;
-                        case 'withdrawMoney':
-                            withdrawMoney();
-                            break;
-                        case 'increaseBalance':
-                            increaseBalance();
-                            break;
                     }
                 }
             } else {
@@ -568,30 +554,6 @@
                 alert("ملک کافی برای فروش ندارید!");
             }
             updateUI();
-        }
-
-        function withdrawMoney() {
-            let amount = getAmount();
-            if (coins >= amount) {
-                coins -= amount; // برداشت پول
-                transactionHistory.push(`💸 برداشت پول به مقدار ${amount} انجام شد.`);
-            } else {
-                alert("کوین کافی برای برداشت ندارید!");
-            }
-            updateUI();
-        }
-
-        function increaseBalance() {
-            const selectedBusinessIndex = document.getElementById("businessSelect").value;
-            let amount = parseInt(document.getElementById("incomeAmount").value);
-            if (amount > 0) {
-                businessList[selectedBusinessIndex].balance += amount; // افزایش درآمد کسب و کار انتخاب شده
-                coins -= amount; // کسر از موجودی اصلی
-                transactionHistory.push(`💰 افزایش درآمد به مقدار ${amount} برای ${businessList[selectedBusinessIndex].name} انجام شد.`);
-                updateUI();
-            } else {
-                alert("لطفاً مقدار معتبر وارد کنید.");
-            }
         }
 
         function showPrivateContent() {
@@ -809,20 +771,6 @@
                 personalBankBalance += depositAmount; // اضافه کردن به موجودی بانک شخصی
                 coins -= depositAmount; // کسر از موجودی اصلی
                 transactionHistory.push(`💰 واریز ${depositAmount} به بانک شخصی انجام شد.`);
-                closePersonalBankForm(); // بستن فرم بانک شخصی
-                updateUI(); // بروزرسانی رابط کاربری
-            } else {
-                alert("لطفاً مقدار معتبر وارد کنید یا موجودی کافی نیست.");
-            }
-        }
-
-        function withdrawMoney() {
-            const withdrawAmount = parseInt(document.getElementById("withdrawAmount").value);
-    
-            if (withdrawAmount > 0 && personalBankBalance >= withdrawAmount) {
-                personalBankBalance -= withdrawAmount; // کسر از موجودی بانک شخصی
-                coins += withdrawAmount; // اضافه کردن به موجودی اصلی
-                transactionHistory.push(`💸 برداشت ${withdrawAmount} از بانک شخصی انجام شد.`);
                 closePersonalBankForm(); // بستن فرم بانک شخصی
                 updateUI(); // بروزرسانی رابط کاربری
             } else {
