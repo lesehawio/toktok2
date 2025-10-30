@@ -760,9 +760,16 @@
                 const totalCost = quantity * price;
                 if (coins >= totalCost) {
                     coins -= totalCost; // کسر هزینه از موجودی
+                    // بررسی وجود محصول در لیست خریداری شده
+                    const existingProduct = purchasedProducts.find(product => product.name === productName);
+                    if (existingProduct) {
+                        existingProduct.quantity += quantity; // افزایش مقدار موجود
+                    } else {
+                        purchasedProducts.push({ name: productName, quantity: quantity }); // افزودن به لیست خرید
+                    }
+
                     // افزایش موجودی محصول در کسب و کار انتخاب شده
                     productInventory[selectedBusiness.name] = (productInventory[selectedBusiness.name] || 0) + quantity; 
-                    purchasedProducts.push({ name: productName, quantity: quantity }); // افزودن به لیست خرید
                     transactionHistory.push(`💰 ${quantity} واحد از ${productName} برای ${selectedBusiness.name} خریداری شد.`);
                     document.getElementById("productMessage").innerText = `💰 ${quantity} واحد از ${productName} برای ${selectedBusiness.name} خریداری شد.`;
                     updateUI(); // بروزرسانی رابط کاربری
@@ -782,8 +789,9 @@
             const selectedBusiness = businessList[selectedBusinessIndex];
 
             if (productName && quantity > 0 && price > 0) {
-                if (productInventory[selectedBusiness.name] && productInventory[selectedBusiness.name] >= quantity) {
-                    productInventory[selectedBusiness.name] -= quantity; // کاهش موجودی محصول
+                const existingProduct = purchasedProducts.find(product => product.name === productName);
+                if (existingProduct && existingProduct.quantity >= quantity) {
+                    existingProduct.quantity -= quantity; // کاهش موجودی محصول
                     coins += quantity * price; // افزایش موجودی با فروش
                     transactionHistory.push(`💵 ${quantity} واحد از ${productName} از ${selectedBusiness.name} فروخته شد.`);
                     document.getElementById("productMessage").innerText = `💵 ${quantity} واحد از ${productName} فروخته شد.`;
