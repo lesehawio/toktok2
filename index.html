@@ -118,25 +118,26 @@
         .transaction-history::-webkit-scrollbar-track {
             background: #FF69B4; /* Color of the scrollbar track */
         }
-        .price-box {
+        .product-list {
+            margin-top: 20px;
+            text-align: left;
+            color: #333;
+            border: 1px solid #FF69B4; /* Border color */
+            border-radius: 8px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .product-list h3 {
+            margin: 0;
+            padding: 0;
+        }
+        .product-list-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin: 20px 0;
+            margin: 5px 0;
         }
-        .price-box input {
-            width: 45%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 16px;
+        .product-list-item span {
             color: #8B00FF;
-            text-align: center;
-        }
-        .total-cost {
-            margin-bottom: 10px;
-            font-size: 20px;
-            color: #FF69B4;
         }
         .day-counter {
             position: absolute;
@@ -169,26 +170,7 @@
             font-size: 18px;
             color: #333;
         }
-        .loan-form {
-            display: none;
-            background: #FFB6C1; /* Light pink background */
-            color: #8B00FF; /* Purple text */
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1001; /* Ensure it is on top of other elements */
-        }
-        .loan-form input {
-            margin: 5px 0;
-            border: 1px solid #8B00FF; /* Purple border */
-            border-radius: 6px;
-            padding: 8px;
-        }
-        .business-form {
+        .loan-form, .business-form, .account-form, .personal-bank-form, .sell-business-form, .product-form {
             display: none;
             background: #FFB6C1; /* Light pink background */
             color: #8B00FF; /* Purple text */
@@ -206,36 +188,6 @@
             color: red;
             font-weight: bold;
         }
-        .account-form {
-            display: none;
-            background: #FFB6C1; /* Light pink background */
-            color: #8B00FF; /* Purple text */
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1001; /* Ensure it is on top of other elements */
-        }
-        .personal-bank-form {
-            display: none;
-            background: #FFB6C1; /* Light pink background */
-            color: #8B00FF; /* Purple text */
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1001; /* Ensure it is on top of other elements */
-        }
-        .clear-storage-btn {
-            margin-top: 20px;
-            background: #FF4500; /* Red background for clear storage */
-        }
         .business-select {
             margin-top: 10px;
             padding: 8px;
@@ -243,23 +195,8 @@
             border: 1px solid #8B00FF; /* Purple border */
             width: 100%;
         }
-        .business-info {
-            margin: 10px 0;
-            font-size: 16px;
-            color: #333;
-        }
-        .sell-business-form {
-            display: none;
-            background: #FFB6C1; /* Light pink background */
-            color: #8B00FF; /* Purple text */
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1001; /* Ensure it is on top of other elements */
+        .product-form {
+            display: none; /* Initially hidden */
         }
     </style>
 </head>
@@ -279,6 +216,13 @@
         <h1 id="userGreeting"></h1>
         <div class="bank-info" id="bankInfo">🏦 بانک ملکیانس: 111 اوبرو</div>
 
+        <!-- بخش موجودی محصولات -->
+        <div class="product-list" id="productList">
+            <h3>محصولات خریداری شده:</h3>
+            <div id="products"></div>
+            <button class="btn" onclick="clearPurchasedProducts()">پاک کردن محصولات</button>
+        </div>
+
         <!-- Business Info Section -->
         <div class="business-info">
             <label for="businessSelect">انتخاب کسب و کار:</label>
@@ -290,7 +234,7 @@
         <div class="balance" id="properties">🏠 املاک: 0</div>
         <div class="balance" id="mortgage">📜 املاک در رهن: 0</div>
         <div class="balance" id="businessIncome">💼 درآمد کسب و کار: 0</div>
-        <div class="balance" id="personalBankBalanceMain">🏦 موجودی بانک شخصی: 0</div> <!-- نمایش موجودی بانک شخصی -->
+        <div class="balance" id="personalBankBalanceMain">🏦 موجودی بانک شخصی: 0</div>
         <div class="total-cost" id="totalCost">🔹 مجموع هزینه: 0</div>
         
         <div class="price-box">
@@ -327,7 +271,8 @@
         <button class="btn" onclick="confirmAction('mortgageProperty')">🏦 رهن ملک</button>
         <button class="btn" onclick="confirmAction('releaseMortgage')">🔓 آزاد کردن رهن</button>
         <button class="btn" onclick="confirmAction('sellProperty')">💵 فروش ملک</button>
-        <button class="btn" onclick="showSellBusinessForm()">💼 فروش کسب و کار</button> <!-- دکمه فروش کسب و کار -->
+        <button class="btn" onclick="showSellBusinessForm()">💼 فروش کسب و کار</button>
+        <button class="btn" onclick="showProductForm()">🛒 خرید و فروش محصول</button> <!-- دکمه خرید و فروش محصول -->
 
         <div class="transaction-history" id="transactionHistory"></div>
 
@@ -403,6 +348,27 @@
         <button class="btn" onclick="sellBusiness()">فروش کسب و کار</button>
     </div>
 
+    <div class="product-form" id="productForm">
+        <span class="close-form" onclick="closeProductForm()">✖</span>
+        <h2>🛒 خرید و فروش محصول</h2>
+        <div class="form-group">
+            <label for="productName">نام محصول:</label>
+            <input type="text" id="productName" placeholder="نام محصول">
+        </div>
+        <div class="form-group">
+            <label for="productQuantity">مقدار:</label>
+            <input type="number" id="productQuantity" placeholder="مقدار">
+        </div>
+        <div class="form-group">
+            <label for="productPrice">قیمت هر واحد:</label>
+            <input type="number" id="productPrice" placeholder="قیمت هر واحد">
+        </div>
+        <button class="btn" onclick="buyProduct()">💰 خرید محصول</button>
+        <button class="btn" onclick="sellProductFromInventory()">💵 فروش محصول</button>
+        <div id="productMessage"></div>
+        <div id="productInventory" class="balance">📦 موجودی محصول: 0</div>
+    </div>
+
     <audio id="audio" src="https://uploadkon.ir/uploads/f79729_25ba054c65e587c423032356c4d01b3663-ftkoplqj.mp3"></audio>
 
     <script>
@@ -416,6 +382,8 @@
         let businessList = JSON.parse(localStorage.getItem('businessList')) || []; // لیست کسب و کارها
         let repaymentInterval; // برای مدیریت پرداخت اقساط
         let personalBankBalance = 0; // موجودی بانک شخصی
+        let productInventory = {}; // شی برای نگهداری موجودی محصولات برای هر کسب و کار
+        let purchasedProducts = []; // لیست محصولات خریداری شده
 
         function updateUI() {
             document.getElementById("coins").innerText = "💰 موجودی کوین: " + coins;
@@ -444,7 +412,20 @@
             if (businessSelect.selectedIndex >= 0) {
                 const selectedBusiness = businessList[businessSelect.value];
                 document.getElementById("selectedBusinessBalance").innerText = `💼 موجودی کسب و کار انتخاب شده: ${selectedBusiness.balance}`;
+                // نمایش موجودی محصول برای کسب و کار انتخاب شده
+                const businessId = selectedBusiness.name;
+                document.getElementById("productInventory").innerText = `📦 موجودی محصول: ${productInventory[businessId] || 0}`;
             }
+
+            // نمایش لیست محصولات خریداری شده
+            const productsDiv = document.getElementById("products");
+            productsDiv.innerHTML = ""; // پاک کردن لیست قبلی
+            purchasedProducts.forEach(product => {
+                const productItem = document.createElement("div");
+                productItem.classList.add("product-list-item");
+                productItem.innerHTML = `<span>${product.name} - ${product.quantity} واحد</span>`;
+                productsDiv.appendChild(productItem);
+            });
 
             // Check if coins are zero and show game over message
             if (coins <= 0) {
@@ -459,6 +440,8 @@
             localStorage.setItem('daysPassed', daysPassed);
             localStorage.setItem('businessList', JSON.stringify(businessList)); // ذخیره لیست کسب و کارها
             localStorage.setItem('personalBankBalance', personalBankBalance);
+            localStorage.setItem('productInventory', JSON.stringify(productInventory)); // ذخیره موجودی محصولات
+            localStorage.setItem('purchasedProducts', JSON.stringify(purchasedProducts)); // ذخیره محصولات خریداری شده
         }
 
         function clearStorage() {
@@ -672,6 +655,7 @@
                     coins -= prepayment; // Deduct prepayment from user's coins
                     // اضافه کردن کسب و کار جدید به لیست
                     businessList.push({ name: businessName, balance: prepayment });
+                    productInventory[businessName] = 0; // Initialize product inventory for the new business
                     transactionHistory.push(`کسب و کار "${businessName}" با پیش پرداخت ${prepayment} شروع شد.`);
                     closeBusinessForm();
                     updateUI();
@@ -749,6 +733,7 @@
                 coins += sellPrice; // Add selling price to coins
                 transactionHistory.push(`💼 فروش کسب و کار "${business.name}" به قیمت ${sellPrice} انجام شد.`);
                 businessList.splice(selectedBusinessIndex, 1); // Remove the business from the list
+                delete productInventory[business.name]; // Remove product inventory for this business
                 updateUI();
                 closeSellBusinessForm();
             } else {
@@ -756,26 +741,64 @@
             }
         }
 
-        function showPersonalBankForm() {
-            document.getElementById("personalBankForm").style.display = "block"; // نمایش فرم بانک شخصی
+        function showProductForm() {
+            document.getElementById("productForm").style.display = "block"; // نمایش فرم خرید و فروش محصول
         }
 
-        function closePersonalBankForm() {
-            document.getElementById("personalBankForm").style.display = "none"; // پنهان کردن فرم بانک شخصی
+        function closeProductForm() {
+            document.getElementById("productForm").style.display = "none"; // پنهان کردن فرم خرید و فروش محصول
         }
 
-        function depositMoney() {
-            const depositAmount = parseInt(document.getElementById("depositAmount").value);
-    
-            if (depositAmount > 0 && coins >= depositAmount) {
-                personalBankBalance += depositAmount; // اضافه کردن به موجودی بانک شخصی
-                coins -= depositAmount; // کسر از موجودی اصلی
-                transactionHistory.push(`💰 واریز ${depositAmount} به بانک شخصی انجام شد.`);
-                closePersonalBankForm(); // بستن فرم بانک شخصی
-                updateUI(); // بروزرسانی رابط کاربری
+        function buyProduct() {
+            const productName = document.getElementById("productName").value;
+            const quantity = parseInt(document.getElementById("productQuantity").value);
+            const price = parseInt(document.getElementById("productPrice").value);
+            const selectedBusinessIndex = document.getElementById("businessSelect").value;
+            const selectedBusiness = businessList[selectedBusinessIndex];
+
+            if (productName && quantity > 0 && price > 0) {
+                const totalCost = quantity * price;
+                if (coins >= totalCost) {
+                    coins -= totalCost; // کسر هزینه از موجودی
+                    // افزایش موجودی محصول در کسب و کار انتخاب شده
+                    productInventory[selectedBusiness.name] = (productInventory[selectedBusiness.name] || 0) + quantity; 
+                    purchasedProducts.push({ name: productName, quantity: quantity }); // افزودن به لیست خرید
+                    transactionHistory.push(`💰 ${quantity} واحد از ${productName} برای ${selectedBusiness.name} خریداری شد.`);
+                    document.getElementById("productMessage").innerText = `💰 ${quantity} واحد از ${productName} برای ${selectedBusiness.name} خریداری شد.`;
+                    updateUI(); // بروزرسانی رابط کاربری
+                } else {
+                    alert("کوین کافی ندارید!");
+                }
             } else {
-                alert("لطفاً مقدار معتبر وارد کنید یا موجودی کافی نیست.");
+                alert("لطفاً تمام فیلدها را به درستی پر کنید.");
             }
+        }
+
+        function sellProductFromInventory() {
+            const productName = document.getElementById("productName").value;
+            const quantity = parseInt(document.getElementById("productQuantity").value);
+            const price = parseInt(document.getElementById("productPrice").value);
+            const selectedBusinessIndex = document.getElementById("businessSelect").value;
+            const selectedBusiness = businessList[selectedBusinessIndex];
+
+            if (productName && quantity > 0 && price > 0) {
+                if (productInventory[selectedBusiness.name] && productInventory[selectedBusiness.name] >= quantity) {
+                    productInventory[selectedBusiness.name] -= quantity; // کاهش موجودی محصول
+                    coins += quantity * price; // افزایش موجودی با فروش
+                    transactionHistory.push(`💵 ${quantity} واحد از ${productName} از ${selectedBusiness.name} فروخته شد.`);
+                    document.getElementById("productMessage").innerText = `💵 ${quantity} واحد از ${productName} فروخته شد.`;
+                    updateUI(); // بروزرسانی رابط کاربری
+                } else {
+                    alert("موجودی کافی برای فروش ندارید!");
+                }
+            } else {
+                alert("لطفاً تمام فیلدها را به درستی پر کنید.");
+            }
+        }
+
+        function clearPurchasedProducts() {
+            purchasedProducts = []; // خالی کردن لیست محصولات خریداری شده
+            updateUI(); // بروزرسانی رابط کاربری
         }
 
         updateUI(); // بارگذاری اولیه اطلاعات
